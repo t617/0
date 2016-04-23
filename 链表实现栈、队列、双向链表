@@ -1,0 +1,46 @@
+void DouList::clear() {
+    if (m_head== NULL)
+    return;
+    while (m_head) {
+        DouListNode* t= m_head;
+        m_head= m_head->next;
+        delete t;
+    }
+    m_head= m_tail= NULL;
+}
+void DouList::operator=(const DouList &other) {
+    clear();
+    DouListNode* t= other.m_tail;
+    while (t!= NULL) {
+        push_front(t->elem);
+        t= t->prev;
+    }
+}
+错误1：
+DouList::DouList(const DouList &src) {
+    *this= src;
+}  // [Memory limit for your program (32 MB) exceeded] 死循环
+正确1：
+DouList::DouList(const DouList &src) {
+    m_tail= m_head= NULL;  // 初始化
+    *this= src;
+}
+错误2：
+void DouList::operator=(const DouList &other) {
+    m_tail= m_head= NULL;  // 未delete掉的空间
+    clear();
+    DouListNode* t= other.m_tail;
+    while (t!= NULL) {
+        push_front(t->elem);
+        t= t->prev;
+    }
+}  // contains 1 memory leak(s) 内存泄露
+正确2：
+void DouList::operator=(const DouList &other) {
+    clear();
+    DouListNode* t= other.m_tail;
+    while (t!= NULL) {
+        push_front(t->elem);
+        t= t->prev;
+    }
+}
